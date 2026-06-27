@@ -103,7 +103,16 @@ check_untyped_defs = true
 
 # Heavy/optional third-party libs without type stubs.
 [[tool.mypy.overrides]]
-module = ["cv2.*", "insightface.*", "diffusers.*", "pyiqa.*", "replicate.*", "onnxruntime.*"]
+module = [
+    "cv2.*",
+    "insightface.*",
+    "diffusers.*",
+    "pyiqa.*",
+    "replicate.*",
+    "onnxruntime.*",
+    "torch.*",
+    "torchvision.*",
+]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
