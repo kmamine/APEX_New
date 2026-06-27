@@ -1,0 +1,27 @@
+{
+  "basic_info": {
+    "purpose": "Corporate Website",
+    "attire": "Smart Casual",
+    "background": "Studio-like",
+    "vibe": "Creative"
+  },
+  "advanced_settings": {
+    "lighting": "Soft Lighting",
+    "mood": "Serious",
+    "age_range": "30-40",
+    "gender": "Female",
+    "ethnicity": "Middle Eastern",
+    "resolution": "1024x1024 (Standard)"
+  },
+  "additional_info": {
+    "reference_photo": null,
+    "custom_notes": "fussy",
+    "preset_used": null
+  },
+  "metadata": {
+    "timestamp": "2025-07-20 01:31:42",
+    "version": "2.0",
+    "created_by": "APEX Portrait Generator"
+  },
+  "generated_prompt": "Ultra-realistic executive-level corporate portrait, featuring stylish casual wear, modern professional appearance, set against professional studio setup, controlled lighting, with artistic expression, creative energy, innovative look, gentle, diffused lighting, serious, focused expression, professional photography, high resolution, cinematic lighting, sharp focus, professional color grading, detailed facial features, fussy, masterpiece, best quality, highly detailed, photorealistic"
+}

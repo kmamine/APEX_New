@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.env
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# uv
+# (uv.lock IS committed; nothing to ignore here)
+
+# Node / web
+web/node_modules/
+web/dist/
+web/.vite/
+node_modules/
+
+# Generated API types are committed (CI checks staleness); build output is not.
+
+# APEX runtime data & model caches
+data/
+models/
+*.onnx
+*.safetensors
+
+# Reference-only legacy implementation (kept locally, not part of this repo)
+APEX_old/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp

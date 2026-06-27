@@ -1,0 +1,120 @@
+[project]
+name = "apex-portrait"
+version = "3.0.0"
+description = "APEX — Agentic Portrait EXperience: an agentic harness that edits a photo into a professional portrait with a quality-assured, MLLM-orchestrated loop."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [{ name = "Mohamed Amine Kerkouri", email = "m.a.kerkouri@f-initiatives.com" }]
+keywords = ["portrait", "image-editing", "agentic", "diffusion", "vlm", "qwen", "gemma"]
+classifiers = [
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+]
+
+# Core deps are intentionally light so the API/demo runs without GPU/ML stacks.
+dependencies = [
+    "pydantic>=2.7",
+    "pydantic-settings>=2.3",
+    "pillow>=10.3",
+    "numpy>=1.26",
+    "opencv-python-headless>=4.9",
+    "openai>=1.30",
+    "httpx>=0.27",
+    "typer>=0.12",
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.29",
+    "python-multipart>=0.0.9",
+    "sse-starlette>=2.1",
+]
+
+[project.optional-dependencies]
+# Local GPU inference: Qwen image editor + heavy deterministic metric models.
+local-gpu = [
+    "torch>=2.3",
+    "diffusers>=0.34",
+    "transformers>=4.44",
+    "accelerate>=0.30",
+    "safetensors>=0.4",
+    "insightface>=0.7.3",
+    "onnxruntime-gpu>=1.17",
+    "pyiqa>=0.1.11",
+]
+# Hosted API backends.
+api = [
+    "replicate>=0.25",
+]
+# Distributed run queue for the full-stack docker deployment.
+queue = [
+    "arq>=0.26",
+    "redis>=5.0",
+]
+dev = [
+    "pytest>=8.2",
+    "pytest-cov>=5.0",
+    "pytest-asyncio>=0.23",
+    "pytest-httpx>=0.30",
+    "ruff>=0.5",
+    "mypy>=1.10",
+    "pre-commit>=3.7",
+]
+
+[project.scripts]
+apex = "apex.cli:app"
+
+[project.urls]
+Repository = "https://github.com/kmamine/APEX_New"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/apex"]
+
+# ----------------------------------------------------------------------------
+# Tooling
+# ----------------------------------------------------------------------------
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "C4", "RUF"]
+ignore = ["B008"]  # FastAPI/typer use callables in argument defaults by design.
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["B011"]
+# Package __init__ re-exports are grouped by domain, not alphabetically sorted.
+"src/apex/goalspec/__init__.py" = ["RUF022"]
+
+[tool.mypy]
+python_version = "3.12"
+packages = ["apex"]
+mypy_path = "src"
+plugins = ["pydantic.mypy"]
+warn_unused_ignores = true
+warn_redundant_casts = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+check_untyped_defs = true
+
+# Heavy/optional third-party libs without type stubs.
+[[tool.mypy.overrides]]
+module = ["cv2.*", "insightface.*", "diffusers.*", "pyiqa.*", "replicate.*", "onnxruntime.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+markers = [
+    "gpu: requires a CUDA GPU and heavy ML deps (deselect with -m 'not gpu')",
+    "network: requires network access to an external/model endpoint",
+]
+addopts = "-ra --strict-markers"
+
+[tool.coverage.run]
+source = ["apex"]
+branch = true
