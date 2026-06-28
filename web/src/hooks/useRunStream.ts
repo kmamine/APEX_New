@@ -10,9 +10,9 @@ interface RunStream {
 }
 
 /**
- * Subscribes to a run's SSE stream. Each event triggers a full GET of the run
- * (so image URLs are always present); the snapshot event hydrates immediately
- * and late-joins / reconnects work without replay.
+ * Tracks a run via SSE, with a polling fallback so the final state always lands
+ * even if the SSE stream is buffered/dropped by a dev proxy. Every event (and
+ * each poll tick) does a full GET so image URLs are always present.
  */
 export function useRunStream(runId: string | null): RunStream {
   const [detail, setDetail] = useState<RunDetail | null>(null);
@@ -25,8 +25,17 @@ export function useRunStream(runId: string | null): RunStream {
     setFinished(false);
     setError(null);
 
+    let stopped = false;
     const source = new EventSource(api.eventsUrl(runId));
-    let closed = false;
+    let poll: ReturnType<typeof setInterval>;
+
+    const stop = () => {
+      if (!stopped) {
+        stopped = true;
+        source.close();
+        clearInterval(poll);
+      }
+    };
 
     const refresh = async () => {
       try {
@@ -34,17 +43,10 @@ export function useRunStream(runId: string | null): RunStream {
         setDetail(next);
         if (TERMINAL_STATUSES.includes(next.status)) {
           setFinished(true);
-          close();
+          stop();
         }
       } catch (err) {
         setError(String(err));
-      }
-    };
-
-    const close = () => {
-      if (!closed) {
-        closed = true;
-        source.close();
       }
     };
 
@@ -55,17 +57,15 @@ export function useRunStream(runId: string | null): RunStream {
         void refresh();
       }
     });
-    source.addEventListener('iteration', () => void refresh());
-    source.addEventListener('done', () => void refresh());
-    source.addEventListener('cancelled', () => void refresh());
-    source.addEventListener('failed', () => void refresh());
-    source.onerror = () => {
-      // Transport hiccup: if the run already finished server-side, a refresh
-      // settles state; otherwise the browser auto-reconnects.
-      if (!finished) void refresh();
-    };
+    for (const evt of ['iteration', 'done', 'cancelled', 'failed']) {
+      source.addEventListener(evt, () => void refresh());
+    }
+    source.onerror = () => void refresh();
 
-    return close;
+    // Belt-and-suspenders: poll until the run reaches a terminal state.
+    poll = setInterval(() => void refresh(), 2500);
+
+    return stop;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [runId]);
 

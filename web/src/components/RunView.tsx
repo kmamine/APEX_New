@@ -31,6 +31,15 @@ export function RunView({ runId, onReset }: { runId: string; onReset: () => void
 
   const running = !finished && (detail.status === 'running' || detail.status === 'pending');
 
+  // Prefer the final image; otherwise fall back to the best/last iteration so a
+  // stopped run still shows a result.
+  const iterations = detail.iterations;
+  const bestIteration =
+    detail.final_index >= 0 && detail.final_index < iterations.length
+      ? iterations[detail.final_index]
+      : iterations[iterations.length - 1];
+  const resultUrl = detail.final_image_url ?? bestIteration?.image_url ?? null;
+
   return (
     <div className="space-y-6">
       <Card>
@@ -56,9 +65,9 @@ export function RunView({ runId, onReset }: { runId: string; onReset: () => void
             <figcaption className="mt-1 text-center text-xs text-gray-500">Original</figcaption>
           </figure>
           <figure>
-            {detail.final_image_url ? (
-              <a href={detail.final_image_url} download>
-                <img src={detail.final_image_url} alt="final portrait" className="w-full rounded-lg" />
+            {resultUrl ? (
+              <a href={resultUrl} download>
+                <img src={resultUrl} alt="result portrait" className="w-full rounded-lg" />
               </a>
             ) : (
               <div className="flex aspect-square items-center justify-center rounded-lg bg-gray-100 text-sm text-gray-400">
@@ -66,7 +75,11 @@ export function RunView({ runId, onReset }: { runId: string; onReset: () => void
               </div>
             )}
             <figcaption className="mt-1 text-center text-xs text-gray-500">
-              Final{detail.final_image_url ? ' — click to download' : ''}
+              {detail.final_image_url
+                ? 'Final — click to download'
+                : resultUrl
+                  ? 'Best iteration so far'
+                  : 'Final'}
             </figcaption>
           </figure>
         </div>
