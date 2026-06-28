@@ -23,6 +23,7 @@ from .models import (
     BasicInfo,
     GoalSpec,
     Metadata,
+    goal_from_form,
 )
 from .options import OPTIONS, FieldOption, option_values
 from .presets import PRESETS, PresetData, get_preset, goal_from_preset
@@ -46,6 +47,7 @@ __all__ = [
     "AdvancedSettings",
     "AdditionalInfo",
     "Metadata",
+    "goal_from_form",
     # options / presets
     "OPTIONS",
     "FieldOption",

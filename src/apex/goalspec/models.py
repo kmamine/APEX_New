@@ -82,10 +82,36 @@ class GoalSpec(BaseModel):
         return cls.model_validate(data)
 
 
+_ADVANCED_FIELDS = ("lighting", "mood", "age_range", "gender", "ethnicity", "resolution")
+
+
+def goal_from_form(data: dict[str, Any]) -> GoalSpec:
+    """Build a GoalSpec from a flat form payload (the shape the React app posts).
+
+    Unset advanced fields fall back to their defaults. Validate the payload with
+    :func:`apex.goalspec.validate_goal_form` first.
+    """
+    advanced = {key: data[key] for key in _ADVANCED_FIELDS if data.get(key)}
+    return GoalSpec(
+        basic_info=BasicInfo(
+            purpose=data["purpose"],
+            attire=data["attire"],
+            background=data["background"],
+            vibe=data["vibe"],
+        ),
+        advanced_settings=AdvancedSettings(**advanced),
+        additional_info=AdditionalInfo(
+            custom_notes=(data.get("custom_notes") or None),
+            preset_used=(data.get("preset_name") or None),
+        ),
+    )
+
+
 __all__ = [
     "AdditionalInfo",
     "AdvancedSettings",
     "BasicInfo",
     "GoalSpec",
     "Metadata",
+    "goal_from_form",
 ]

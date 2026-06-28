@@ -40,12 +40,19 @@ def _build_editor(mode: str, settings: Settings) -> EditBackend:
     raise ValueError(f"unknown editor backend mode: {mode!r}")
 
 
+def build_chat(settings: Settings) -> ChatBackend:
+    """Build the chat backend (cheap to recreate; safe to call per run)."""
+    return _build_chat(settings.resolved_chat_backend(), settings)
+
+
+def build_editor(settings: Settings) -> EditBackend:
+    """Build the editor backend (keep warm — the local pipeline reloads otherwise)."""
+    return _build_editor(settings.resolved_editor_backend(), settings)
+
+
 def build_backend(settings: Settings) -> ModelBackend:
     """Build the chat + editor backends from settings (per-capability overrides honored)."""
-    return ModelBackend(
-        chat=_build_chat(settings.resolved_chat_backend(), settings),
-        editor=_build_editor(settings.resolved_editor_backend(), settings),
-    )
+    return ModelBackend(chat=build_chat(settings), editor=build_editor(settings))
 
 
-__all__ = ["build_backend"]
+__all__ = ["build_backend", "build_chat", "build_editor"]
