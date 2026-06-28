@@ -40,3 +40,6 @@ APEX_old/
 .idea/
 .vscode/
 *.swp
+
+# Local test input (personal photo, not part of the repo)
+21007787.jpg
