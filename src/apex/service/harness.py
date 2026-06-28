@@ -18,7 +18,7 @@ from PIL import Image
 
 from ..backends import build_chat, build_editor
 from ..config import Settings, get_settings
-from ..editor import ImageEditor
+from ..editor import IdentityRestorer, ImageEditor
 from ..goalspec import OPTIONS, PRESETS, GoalSpec, ValidationResult, validate_goal_form
 from ..goalspec.options import FieldOption
 from ..goalspec.presets import PresetData
@@ -43,7 +43,19 @@ class ApexHarness:
         self.run_store = RunStore(self.settings.runs_dir)
         self._editor_backend = build_editor(self.settings)
         self._metrics = self._build_metrics()
+        self._identity_restorer = self._build_identity_restorer()
         self._runs: dict[str, RunState] = {}
+
+    def _build_identity_restorer(self) -> IdentityRestorer | None:
+        if not self.settings.identity_restore:
+            return None
+        device = self.settings.editor_device
+        ctx_id = int(device.split(":")[1]) if ":" in device else 0
+        return IdentityRestorer(
+            model_repo=self.settings.inswapper_repo,
+            model_file=self.settings.inswapper_file,
+            ctx_id=ctx_id,
+        )
 
     def _build_metrics(self) -> list:
         if self.settings.backend_mode == "fake":
@@ -152,6 +164,7 @@ class ApexHarness:
             thresholds=self.thresholds,
             policy=self.policy,
             on_iteration=on_iteration,
+            identity_restorer=self._identity_restorer,
         )
 
         try:

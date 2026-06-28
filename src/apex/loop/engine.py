@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from PIL import Image
 
 from ..config import LoopPolicy, QualityThresholds
-from ..editor import ImageEditor
+from ..editor import IdentityRestorer, ImageEditor
 from ..goalspec import GoalSpec
 from ..metrics import Metric, evaluate_image
 from ..metrics.report import QualityReport
@@ -31,6 +31,7 @@ class AgenticLoop:
     thresholds: QualityThresholds
     policy: LoopPolicy
     on_iteration: ProgressCallback | None = None
+    identity_restorer: IdentityRestorer | None = None
 
     def run(
         self,
@@ -61,6 +62,9 @@ class AgenticLoop:
             candidate = self.editor.apply(
                 source, plan.next_edit.instruction, references, size=size
             )
+            if self.identity_restorer is not None:
+                # Graft the original identity back on to recover face similarity.
+                candidate = self.identity_restorer.restore(input_image, candidate)
             report = evaluate_image(self.metrics, input_image, candidate)
             judgement = self.judge.evaluate(goal, candidate)
             decision = decide(

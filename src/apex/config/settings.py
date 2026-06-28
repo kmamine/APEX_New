@@ -80,6 +80,12 @@ class Settings(BaseSettings):
     edit_from_original: bool = True
     enabled_metrics: str | None = None  # comma-separated; None => all enabled
 
+    # Graft the original face's identity onto each edit (InsightFace inswapper)
+    # to push identity similarity much higher. Needs the local-gpu extra.
+    identity_restore: bool = False
+    inswapper_repo: str = "ezioruan/inswapper_128.onnx"
+    inswapper_file: str = "inswapper_128.onnx"
+
     # --- Misc ---
     model_cache: str = "models"
 

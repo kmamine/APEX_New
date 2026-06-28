@@ -1,5 +1,6 @@
-"""Image editing: a backend-agnostic wrapper over the edit model."""
+"""Image editing: a backend-agnostic wrapper + optional identity restoration."""
 
+from .identity_restore import IdentityRestorer
 from .image_editor import ImageEditor
 
-__all__ = ["ImageEditor"]
+__all__ = ["IdentityRestorer", "ImageEditor"]
