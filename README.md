@@ -27,6 +27,26 @@ See **[docs/architecture.md](docs/architecture.md)** for the full design and dia
 - **Full-stack.** A FastAPI service streams iteration progress (SSE) to a React app that shows the edit loop live, with a before/after and per-iteration metric badges.
 - **Engineered as a portfolio project.** `uv`-managed `src/` package, typed throughout (mypy), ruff-clean, 51 tests, CI, Docker, generated TS types from the OpenAPI schema.
 
+## Example
+
+A real run from the app — the **Startup Founder** preset applied to a candid conference photo. The agentic loop ran on `google/gemma-4-E4B-it` (orchestrator + judge) + `Qwen/Qwen-Image-Edit-2511` (editor) with InsightFace identity restoration:
+
+| Input photo | APEX portrait |
+| :---: | :---: |
+| <img src="docs/assets/example-input.png" width="320"> | <img src="docs/assets/example-portrait.png" width="320"> |
+
+Across 3 iterations, **identity preservation held at 0.95** (ArcFace cosine vs. the original) while the judge scored the result **8.9/10** — a clean smart-casual portrait on a studio backdrop, unmistakably the same person.
+
+### The app
+
+The goal form — upload a photo, pick a preset or set purpose / attire / background / vibe:
+
+![APEX goal form](docs/assets/goal-form.png)
+
+The live run view — before → after plus each iteration's edit instruction plus identity / face / sharpness / judge scores, streamed over SSE:
+
+![APEX run view](docs/assets/run-view.png)
+
 ## Quick start — no GPU
 
 The `fake` backend runs the entire pipeline (loop, SSE, UI) deterministically with no models.
