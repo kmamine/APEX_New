@@ -58,13 +58,14 @@ class Settings(BaseSettings):
     editor_device: str = "cuda:0"
     num_inference_steps: int = 50
     true_cfg_scale: float = 4.0  # Qwen
-    editor_guidance_scale: float = 3.0  # FLUX.1-Kontext
+    editor_guidance_scale: float = 2.5  # FLUX.1-Kontext (>2.5 drifts identity)
     # Appended to every edit instruction to nudge the editor toward a clean,
     # photographic look (the semantic edit itself comes from the orchestrator).
     editor_style_suffix: str = (
-        "professional headshot photography, sharp focus, natural skin texture, "
-        "flattering lighting consistent with the background, realistic depth of field, "
-        "subject naturally integrated into the scene, high detail, photorealistic"
+        "professional corporate headshot, 85mm lens, natural skin with visible pores "
+        "and fine texture, no airbrushing or plastic skin, matte realistic complexion, "
+        "sharp focus on the eyes, lighting and depth of field consistent with the "
+        "background, subject naturally integrated into the scene, photorealistic"
     )
     replicate_api_token: str | None = None
 
