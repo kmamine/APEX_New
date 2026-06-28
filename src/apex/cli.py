@@ -89,7 +89,11 @@ def doctor() -> None:
     try:
         import httpx
 
-        resp = httpx.get(f"{settings.vllm_base_url}/models", timeout=5.0)
+        resp = httpx.get(
+            f"{settings.vllm_base_url}/models",
+            headers={"Authorization": f"Bearer {settings.vllm_api_key}"},
+            timeout=5.0,
+        )
         typer.echo(f"  MLLM endpoint: reachable (HTTP {resp.status_code})")
     except Exception as exc:
         typer.echo(f"  MLLM endpoint: UNREACHABLE ({exc})")
