@@ -18,7 +18,7 @@ flowchart TD
     D -->|max-iters / identity fail: return best| F
 ```
 
-See **[docs/architecture.md](docs/architecture.md)** for the full design and diagrams.
+Full design, configuration, API, and model guides live in **[docs/](docs/README.md)**.
 
 ## Highlights
 
@@ -98,9 +98,21 @@ The MLLM is served on **`cuda:1`** (vLLM), so the editor defaults to **`cuda:0`*
 src/apex/        goalspec · config · backends · mllm · editor · metrics · loop · persistence · service · api · cli
 web/             React + Vite + Tailwind frontend (SSE live run view)
 tests/           unit/ (GPU-free) + integration/ (gpu/network markers)
-docs/            architecture.md
+docs/            architecture · configuration · api · models · metrics · development · deployment
 scripts/         run_vllm.sh
 ```
+
+## Documentation
+
+| Guide | Contents |
+|-------|----------|
+| [Architecture](docs/architecture.md) | The loop, layered package, run lifecycle, persistence, design principles |
+| [Configuration](docs/configuration.md) | Every `APEX_*` setting + recommended profiles |
+| [Models & backends](docs/models.md) | gemma · Qwen · FLUX · GGUF · Replicate · identity restoration · GPU topology |
+| [Metrics & the loop](docs/metrics.md) | Gates, decision policy, edit-from-original, tuning |
+| [API reference](docs/api.md) | Endpoints, payloads, the SSE stream, type generation |
+| [Development](docs/development.md) | Setup, tests, CI, extending the harness |
+| [Deployment](docs/deployment.md) | Docker Compose, GPU serving, scaling, production notes |
 
 ## Testing
 

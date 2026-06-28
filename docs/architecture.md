@@ -91,3 +91,62 @@ generated from the FastAPI OpenAPI schema (`npm run gen-types`).
 | Sharpness | soft gate | OpenCV Laplacian variance | — |
 | Aesthetic | informational | pyiqa (CLIP-IQA) | lazy |
 | No-reference IQA | informational | pyiqa (BRISQUE) | lazy |
+
+See [metrics.md](metrics.md) for the full gating semantics and decision policy.
+
+## The GoalSpec
+
+The [`GoalSpec`](../src/apex/goalspec/) is the legacy "profile" reframed as a
+strongly-typed goal that *seeds* the MLLM. Every legacy option value, the five
+presets, the validation messages, and the descriptive "detail dictionaries" are
+preserved — but instead of being concatenated into a static prompt, the detail
+strings become structured context for the orchestrator, and the acceptance
+criteria become the judge's rubric. `to_profile_json` / `from_profile_json`
+keep the on-disk JSON contract, so profiles written by the legacy app still load
+(v2.0 profiles round-trip losslessly).
+
+## Run lifecycle
+
+1. **`create_run`** — `ApexHarness` mints a `run_id`, writes the input image
+   under `data/runs/run_<id>/`, persists an initial `run.json` (`pending`).
+2. **`execute_run`** (worker thread) — builds the loop (orchestrator + judge on a
+   fresh chat client, the warm editor, the metric set, optional identity
+   restorer) and iterates. Each iteration: orchestrate → edit → *(restore)* →
+   evaluate → decide. An `on_iteration` callback writes `iter_NN.png`, appends
+   the `IterationRecord`, re-saves `run.json`, and emits an SSE event.
+3. **Terminal** — the final/best image is written as `final.png`, `run.json` is
+   updated with the terminal status and `final_index`, the goal is auto-saved as
+   a profile (if enabled), and a `done`/`failed`/`cancelled` event closes the SSE
+   stream.
+
+## Persistence
+
+State is plain files under `data/` (see [`persistence/`](../src/apex/persistence/)):
+
+```
+data/
+  profiles/ portrait_profile_YYYYMMDD_HHMMSS.json   # GoalSpec, legacy shape
+  runs/
+    run_<id>/
+      input.png  iter_00.png  iter_01.png …  final.png
+      run.json    # RunState: goal, status, iterations[], final_index,
+                  #           thresholds, policy, timestamps
+```
+
+`RunState` (and the `IterationRecord`s it contains — instruction, orchestration,
+judge scores, metric report, decision) is fully serializable, so a run is
+reproducible/inspectable from `run.json` alone, and the API hydrates from it.
+
+## Design principles
+
+- **Backends behind protocols.** The loop/harness/tests depend only on
+  `ChatBackend` / `EditBackend`, never on torch/vLLM/Replicate — enabling the
+  GPU-free `fake` backend and a 100% GPU-free test suite.
+- **Pure decision core.** `loop.policy.decide` is side-effect-free and
+  exhaustively unit-tested; the engine handles only orchestration and I/O.
+- **Agreement-to-accept.** Deterministic gates *and* the MLLM judge must both
+  approve — neither metrics nor an LLM opinion alone can pass a result.
+- **Always return the best.** Even on a non-accept stop, the best iteration is
+  returned, never merely the last.
+- **One source of truth for types.** Pydantic DTOs generate the frontend's
+  TypeScript; CI fails on drift.
