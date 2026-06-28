@@ -28,6 +28,14 @@ def _build_editor(mode: str, settings: Settings) -> EditBackend:
     if mode == "fake":
         return FakeEditBackend()
     if mode == "local":
+        if settings.editor_engine == "flux":
+            from .local.editor_flux import FluxKontextBackend
+
+            return FluxKontextBackend(
+                model_id=settings.editor_model,
+                device=settings.editor_device,
+                guidance_scale=settings.editor_guidance_scale,
+            )
         from .local.editor_qwen import QwenImageEditBackend
 
         return QwenImageEditBackend(

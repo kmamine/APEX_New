@@ -1,0 +1,23 @@
+# Full-stack demo on the GPU-free `fake` backend — runs anywhere.
+# For real inference, point APEX_* at a GPU host + external vLLM server.
+services:
+  api:
+    build: .
+    environment:
+      APEX_BACKEND_MODE: fake
+    ports:
+      - "8000:8000"
+    volumes:
+      - apex-data:/data
+
+  web:
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+
+volumes:
+  apex-data:

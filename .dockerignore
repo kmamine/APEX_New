@@ -1,0 +1,14 @@
+.git
+.venv
+data/
+models/
+web/node_modules
+web/dist
+**/__pycache__
+.pytest_cache
+.mypy_cache
+.ruff_cache
+APEX_old/
+*.jpg
+*.png
+!tests/fixtures/*.png

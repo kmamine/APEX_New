@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install install-gpu sync lint format type test test-gpu api web gen-types vllm worker demo clean
+.PHONY: help install install-gpu lint format type test test-gpu api web gen-types vllm demo clean
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN{FS=":.*?## "}{printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2}'
@@ -37,9 +37,6 @@ gen-types:  ## Regenerate web TS types from the live OpenAPI schema
 
 vllm:  ## Helper to (re)launch the gemma MLLM via vLLM (see scripts/run_vllm.sh)
 	bash scripts/run_vllm.sh
-
-worker:  ## Run the arq queue worker (full-stack/docker deployment)
-	uv run arq apex.api.runner.WorkerSettings
 
 demo:  ## Run an end-to-end demo on the fake backend (no GPU)
 	APEX_BACKEND_MODE=fake uv run apex run --image $${IMG:-tests/fixtures/sample_face.png} --preset "LinkedIn Professional"

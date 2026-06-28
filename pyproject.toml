@@ -41,6 +41,8 @@ local-gpu = [
     "onnxruntime-gpu>=1.17",
     "pyiqa>=0.1.11",
     "gguf>=0.10",
+    "sentencepiece>=0.2",
+    "protobuf>=4.25",
 ]
 # Hosted API backends.
 api = [

@@ -47,13 +47,18 @@ class Settings(BaseSettings):
     mllm_max_tokens: int = 1024
 
     # --- Image editor ---
+    # Which local editing engine: "qwen" (Qwen-Image-Edit) or "flux"
+    # (FLUX.1-Kontext-dev — the fallback if Qwen weights are impractical).
+    editor_engine: Literal["qwen", "flux"] = "qwen"
     editor_model: str = "Qwen/Qwen-Image-Edit-2511"  # base repo (text encoder + VAE)
-    # Optional GGUF-quantized transformer (much smaller download); the base repo
-    # above still supplies the text encoder + VAE. e.g. a Q4_K_M file (~13 GB).
+    # Optional GGUF-quantized Qwen transformer (much smaller download); the base
+    # repo above still supplies the text encoder + VAE. e.g. a Q4_K_M file (~13 GB).
     editor_gguf_file: str | None = None
-    editor_device: str = "cuda:1"
+    # The MLLM (vLLM) runs on cuda:1, so the editor defaults to cuda:0.
+    editor_device: str = "cuda:0"
     num_inference_steps: int = 45
-    true_cfg_scale: float = 4.0
+    true_cfg_scale: float = 4.0  # Qwen
+    editor_guidance_scale: float = 2.5  # FLUX.1-Kontext
     replicate_api_token: str | None = None
 
     # --- Quality thresholds & loop policy ---
