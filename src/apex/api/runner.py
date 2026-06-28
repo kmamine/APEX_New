@@ -72,7 +72,7 @@ class InProcessRunner:
         except asyncio.CancelledError:
             self._emit(run_id, {"type": "cancelled"}, loop)
         except Exception as exc:
-            self._emit(run_id, {"type": "error", "message": str(exc)}, loop)
+            self._emit(run_id, {"type": "failed", "message": str(exc)}, loop)
         finally:
             self._emit(run_id, {"type": "close"}, loop)
 

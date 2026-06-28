@@ -73,6 +73,7 @@ class RunDetailDTO(BaseModel):
     current_iteration: int
     max_iterations: int
     final_index: int
+    input_image_url: str
     final_image_url: str | None
     error: str | None
     iterations: list[IterationDTO]
@@ -109,6 +110,7 @@ def build_run_detail(state: RunState) -> RunDetailDTO:
         current_iteration=state.current_iteration,
         max_iterations=state.max_iterations,
         final_index=state.final_index,
+        input_image_url=f"{API_PREFIX}/runs/{state.run_id}/input",
         final_image_url=final_url,
         error=state.error,
         iterations=iterations,

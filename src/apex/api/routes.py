@@ -158,6 +158,11 @@ def _image_response(harness: ApexHarness, run_id: str, filename: str) -> FileRes
     return FileResponse(path, media_type="image/png")
 
 
+@router.get("/runs/{run_id}/input")
+def input_image(run_id: str, harness: ApexHarness = Depends(get_harness)) -> FileResponse:
+    return _image_response(harness, run_id, "input.png")
+
+
 @router.get("/runs/{run_id}/iterations/{index}/image")
 def iteration_image(
     run_id: str, index: int, harness: ApexHarness = Depends(get_harness)
