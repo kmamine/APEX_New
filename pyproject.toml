@@ -39,10 +39,14 @@ local-gpu = [
     "safetensors>=0.4",
     "insightface>=0.7.3",
     "onnxruntime-gpu>=1.17",
-    "pyiqa>=0.1.11",
     "gguf>=0.10",
     "sentencepiece>=0.2",
     "protobuf>=4.25",
+]
+# Optional aesthetic / no-reference IQA metrics (informational, not gates).
+# Split out because pyiqa pins an ancient numba that won't build on py>=3.10.
+quality = [
+    "pyiqa>=0.1.11",
 ]
 # Hosted API backends.
 api = [

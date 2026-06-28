@@ -244,11 +244,13 @@ local-gpu = [
     { name = "insightface" },
     { name = "onnxruntime-gpu" },
     { name = "protobuf" },
-    { name = "pyiqa" },
     { name = "safetensors" },
     { name = "sentencepiece" },
     { name = "torch" },
     { name = "transformers" },
+]
+quality = [
+    { name = "pyiqa" },
 ]
 queue = [
     { name = "arq" },
@@ -274,7 +276,7 @@ requires-dist = [
     { name = "protobuf", marker = "extra == 'local-gpu'", specifier = ">=4.25" },
     { name = "pydantic", specifier = ">=2.7" },
     { name = "pydantic-settings", specifier = ">=2.3" },
-    { name = "pyiqa", marker = "extra == 'local-gpu'", specifier = ">=0.1.11" },
+    { name = "pyiqa", marker = "extra == 'quality'", specifier = ">=0.1.11" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.2" },
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.23" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=5.0" },
@@ -291,7 +293,7 @@ requires-dist = [
     { name = "typer", specifier = ">=0.12" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.29" },
 ]
-provides-extras = ["local-gpu", "api", "queue", "dev"]
+provides-extras = ["local-gpu", "quality", "api", "queue", "dev"]
 
 [[package]]
 name = "arq"
