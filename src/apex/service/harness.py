@@ -146,6 +146,7 @@ class ApexHarness:
                 self._editor_backend,
                 num_inference_steps=self.settings.num_inference_steps,
                 true_cfg_scale=self.settings.true_cfg_scale,
+                style_suffix=self.settings.editor_style_suffix,
             ),
             metrics=self._metrics,
             thresholds=self.thresholds,

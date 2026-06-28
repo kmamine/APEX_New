@@ -56,9 +56,15 @@ class Settings(BaseSettings):
     editor_gguf_file: str | None = None
     # The MLLM (vLLM) runs on cuda:1, so the editor defaults to cuda:0.
     editor_device: str = "cuda:0"
-    num_inference_steps: int = 45
+    num_inference_steps: int = 50
     true_cfg_scale: float = 4.0  # Qwen
-    editor_guidance_scale: float = 2.5  # FLUX.1-Kontext
+    editor_guidance_scale: float = 3.0  # FLUX.1-Kontext
+    # Appended to every edit instruction to nudge the editor toward a clean,
+    # photographic look (the semantic edit itself comes from the orchestrator).
+    editor_style_suffix: str = (
+        "professional headshot photography, sharp focus, natural skin texture, "
+        "flattering soft studio lighting, high detail, photorealistic"
+    )
     replicate_api_token: str | None = None
 
     # --- Quality thresholds & loop policy ---

@@ -20,11 +20,13 @@ class ImageEditor:
         negative_prompt: str = NEGATIVE_PROMPT,
         num_inference_steps: int = 45,
         true_cfg_scale: float = 4.0,
+        style_suffix: str = "",
     ) -> None:
         self.backend = backend
         self.negative_prompt = negative_prompt
         self.num_inference_steps = num_inference_steps
         self.true_cfg_scale = true_cfg_scale
+        self.style_suffix = style_suffix
 
     def apply(
         self,
@@ -35,6 +37,8 @@ class ImageEditor:
         seed: int | None = None,
         size: tuple[int, int] | None = None,
     ) -> Image.Image:
+        if self.style_suffix:
+            instruction = f"{instruction.rstrip('. ')}. {self.style_suffix}"
         request = EditRequest(
             input_image=image,
             instruction=instruction,
