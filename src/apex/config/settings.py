@@ -63,7 +63,8 @@ class Settings(BaseSettings):
     # photographic look (the semantic edit itself comes from the orchestrator).
     editor_style_suffix: str = (
         "professional headshot photography, sharp focus, natural skin texture, "
-        "flattering soft studio lighting, high detail, photorealistic"
+        "flattering lighting consistent with the background, realistic depth of field, "
+        "subject naturally integrated into the scene, high detail, photorealistic"
     )
     replicate_api_token: str | None = None
 
@@ -75,6 +76,7 @@ class Settings(BaseSettings):
     iqa_min: float = 0.0
     max_iterations: int = 5
     max_identity_fails: int = 2
+    edit_from_original: bool = True
     enabled_metrics: str | None = None  # comma-separated; None => all enabled
 
     # --- Misc ---
@@ -100,6 +102,7 @@ class Settings(BaseSettings):
         return LoopPolicy(
             max_iterations=self.max_iterations,
             max_identity_fails=self.max_identity_fails,
+            edit_from_original=self.edit_from_original,
         )
 
     def enabled_metric_names(self) -> list[str] | None:

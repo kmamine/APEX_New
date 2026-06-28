@@ -55,9 +55,11 @@ class AgenticLoop:
         final_index = -1
 
         for i in range(self.policy.max_iterations):
-            plan = self.orchestrator.plan(goal, current, prior_feedback)
+            # Edit the original each pass (no compounding) unless configured otherwise.
+            source = input_image if self.policy.edit_from_original else current
+            plan = self.orchestrator.plan(goal, source, prior_feedback)
             candidate = self.editor.apply(
-                current, plan.next_edit.instruction, references, size=size
+                source, plan.next_edit.instruction, references, size=size
             )
             report = evaluate_image(self.metrics, input_image, candidate)
             judgement = self.judge.evaluate(goal, candidate)
@@ -100,13 +102,16 @@ class AgenticLoop:
                 status = RunStatus.STOPPED_MAX_ITERS
                 break
 
-            # REFINE: keep progress only if identity held; otherwise revert.
+            # REFINE. In compounding mode, keep progress only if identity held
+            # (else revert); in edit-from-original mode the source never changes.
             if report.identity_passed:
-                current = last_accepted = candidate
                 identity_fail_streak = 0
+                if not self.policy.edit_from_original:
+                    current = last_accepted = candidate
             else:
-                current = last_accepted
                 identity_fail_streak += 1
+                if not self.policy.edit_from_original:
+                    current = last_accepted
             prior_feedback = _feedback(report, judgement)
 
         if not iterations:  # max_iterations <= 0

@@ -76,7 +76,9 @@ class FakeEditBackend:
     def edit_image(self, request: EditRequest) -> EditResult:
         image = self._transform(request.input_image)
         if request.width and request.height:
-            image = image.resize((request.width, request.height))
+            # Nearest-neighbour keeps high-frequency detail so the (deterministic)
+            # output clears the sharpness gate regardless of input size.
+            image = image.resize((request.width, request.height), Image.Resampling.NEAREST)
         return EditResult(image=image, seed_used=request.seed or 0, meta={"backend": "fake"})
 
 

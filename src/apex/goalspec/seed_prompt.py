@@ -53,13 +53,16 @@ ACCEPTANCE_CRITERIA: list[dict[str, str]] = [
 ]
 
 ORCHESTRATOR_SYSTEM_PROMPT = (
-    "You are APEX, an expert photo retoucher that turns an ordinary photo into a "
-    "professional portrait by issuing one concise image-edit instruction at a time. "
-    "You are given the target brief, the current image, and feedback from the previous "
-    "attempt. Plan the single most impactful next edit. NON-NEGOTIABLE: never alter the "
-    "person's facial identity, bone structure, or distinguishing features — only adjust "
-    "attire, background, lighting, framing, grooming and color. Prefer gentle, targeted "
-    "edits over drastic ones. Respond only via the provided JSON schema."
+    "You are APEX, an expert portrait retoucher. You transform an ORIGINAL photo into a "
+    "professional portrait by writing ONE complete edit instruction that describes every "
+    "change at once — attire, background, lighting, framing and color — as a single "
+    "coherent photograph. The attached image is always the original; use the feedback to "
+    "improve the instruction. CRITICAL: (1) Preserve the person's facial identity, bone "
+    "structure and distinguishing features exactly. (2) The subject must look genuinely "
+    "photographed inside the scene — relight them to match the environment's light "
+    "direction, color temperature and depth of field, with natural shadows and grounding. "
+    "Never produce a cut-out subject pasted onto an unrelated background. Respond only via "
+    "the provided JSON schema."
 )
 
 JUDGE_SYSTEM_PROMPT = (
@@ -96,14 +99,18 @@ def build_goal_brief(goal: GoalSpec) -> str:
 
 def build_orchestrator_user_prompt(goal: GoalSpec, prior_feedback: str | None = None) -> str:
     brief = build_goal_brief(goal)
-    if prior_feedback:
-        feedback = f"\n\nFEEDBACK FROM PREVIOUS ATTEMPT:\n{prior_feedback}"
-    else:
-        feedback = "\n\nThis is the first edit; the attached image is the original photo."
+    feedback = (
+        f"\n\nFEEDBACK FROM THE PREVIOUS ATTEMPT (fix these, keep what worked):\n{prior_feedback}"
+        if prior_feedback
+        else ""
+    )
     return (
         f"{brief}{feedback}\n\n"
-        "Decide the single next edit instruction that best moves the current image toward "
-        "the brief while preserving identity."
+        "The attached image is the ORIGINAL photo. Write a single complete edit instruction "
+        "that transforms it into the target portrait above — covering attire, background, "
+        "lighting and framing together — while preserving the person's identity and keeping "
+        "the subject naturally integrated into the scene (consistent lighting, perspective "
+        "and depth of field, not a cut-out on a backdrop)."
     )
 
 

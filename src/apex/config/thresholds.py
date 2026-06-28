@@ -20,6 +20,9 @@ class LoopPolicy(BaseModel):
 
     max_iterations: int = 5
     max_identity_fails: int = 2  # consecutive identity-gate failures before giving up
+    # Edit the ORIGINAL photo every iteration (one clean transformation, no
+    # quality/identity drift) rather than compounding edits on the prior output.
+    edit_from_original: bool = True
 
 
 __all__ = ["LoopPolicy", "QualityThresholds"]
