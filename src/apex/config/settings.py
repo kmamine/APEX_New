@@ -47,7 +47,10 @@ class Settings(BaseSettings):
     mllm_max_tokens: int = 1024
 
     # --- Image editor ---
-    editor_model: str = "Qwen/Qwen-Image-Edit-2511"
+    editor_model: str = "Qwen/Qwen-Image-Edit-2511"  # base repo (text encoder + VAE)
+    # Optional GGUF-quantized transformer (much smaller download); the base repo
+    # above still supplies the text encoder + VAE. e.g. a Q4_K_M file (~13 GB).
+    editor_gguf_file: str | None = None
     editor_device: str = "cuda:1"
     num_inference_steps: int = 45
     true_cfg_scale: float = 4.0

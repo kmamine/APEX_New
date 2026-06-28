@@ -30,7 +30,11 @@ def _build_editor(mode: str, settings: Settings) -> EditBackend:
     if mode == "local":
         from .local.editor_qwen import QwenImageEditBackend
 
-        return QwenImageEditBackend(model_id=settings.editor_model, device=settings.editor_device)
+        return QwenImageEditBackend(
+            model_id=settings.editor_model,
+            device=settings.editor_device,
+            gguf_file=settings.editor_gguf_file,
+        )
     if mode == "api":
         from .api.editor_replicate import ReplicateEditBackend
 
