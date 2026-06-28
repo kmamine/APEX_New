@@ -247,6 +247,7 @@ local-gpu = [
     { name = "safetensors" },
     { name = "sentencepiece" },
     { name = "torch" },
+    { name = "torchvision" },
     { name = "transformers" },
 ]
 quality = [
@@ -289,6 +290,7 @@ requires-dist = [
     { name = "sentencepiece", marker = "extra == 'local-gpu'", specifier = ">=0.2" },
     { name = "sse-starlette", specifier = ">=2.1" },
     { name = "torch", marker = "extra == 'local-gpu'", specifier = ">=2.3" },
+    { name = "torchvision", marker = "extra == 'local-gpu'", specifier = ">=0.18" },
     { name = "transformers", marker = "extra == 'local-gpu'", specifier = ">=4.44" },
     { name = "typer", specifier = ">=0.12" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.29" },

@@ -33,6 +33,7 @@ dependencies = [
 # Local GPU inference: Qwen image editor + heavy deterministic metric models.
 local-gpu = [
     "torch>=2.3",
+    "torchvision>=0.18",  # required by the Qwen2.5-VL image processor
     "diffusers>=0.34",
     "transformers>=4.44",
     "accelerate>=0.30",
