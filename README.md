@@ -4,16 +4,18 @@
 
 APEX takes a user's photo and a structured **goal** (purpose, attire, background, vibe, …) and produces a professional portrait by **editing** the photo (image-to-image — never generating a stranger's face). A multimodal LLM **orchestrates** each edit and **judges** the result, while **deterministic metrics** — chiefly identity preservation — gate every iteration. The loop refines until the portrait clears a quality bar or the budget is spent, then returns the best iteration.
 
-```
-Input photo (+ goal)
-   ↓
-MLLM Orchestrator ──▶ Qwen-Image-Edit ──▶ candidate
-   ↑                                          │
-   └──── refine ◀── Decision ◀── Evaluation ◀─┘
-                      ├─ deterministic metrics (identity = hard gate)
-                      └─ MLLM-as-judge (per-criterion scores)
-   ↓ accept (gates AND judge agree) / max-iters
-Final portrait
+```mermaid
+flowchart TD
+    A([Input photo + goal]) --> O[MLLM Orchestrator<br/>plan next edit]
+    O --> E[Qwen-Image-Edit<br/>apply edit]
+    E --> V{{Evaluation}}
+    V --> M[Deterministic metrics<br/>identity = hard gate · face · sharpness]
+    V --> J[MLLM-as-judge<br/>per-criterion scores]
+    M --> D{Decision}
+    J --> D
+    D -->|refine: feed failures back| O
+    D -->|accept: gates AND judge agree| F([Final portrait])
+    D -->|max-iters / identity fail: return best| F
 ```
 
 See **[docs/architecture.md](docs/architecture.md)** for the full design and diagrams.
